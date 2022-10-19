@@ -1,7 +1,9 @@
+#line 1 "/Users/chen/www/hass/light/light.ino"
+
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <Arduino.h>
-
+#include <Ticker.h>
 
 // light gpio
 #define LED 2
@@ -18,7 +20,8 @@ const char *password = "b5z0ubf4";  // Enter WiFi password
 
 // MQTT Broker
 const char *mqtt_broker = "192.168.50.210";
-const char *topic = "eps8266/bedroom/top/light1/switch";
+const char *topic = "eps8266/bedroom/top/light/switch";
+const char *topic_status = "eps8266/bedroom/top/light/status";
 const char *mqtt_username = "hass";
 const char *mqtt_password = "1234";
 const int mqtt_port = 1883;
@@ -26,6 +29,7 @@ const int mqtt_port = 1883;
 char switch_open[] = "ON";  // light ON
 char switch_close[] = "OFF";  // light OFF
 
+Ticker ticker;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -50,19 +54,32 @@ void setup() {
   //connecting to a mqtt broker
   client.setServer(mqtt_broker, mqtt_port);
   client.setCallback(callback);
-  reconnect_mqtt();
-  // publish and subscribe
-  client.publish(topic, "hello emqx");
-  client.subscribe(topic);
+  connect_mqtt();
+  ticker.attach(10, sayHi);
 }
 
-void reconnect_mqtt(){
+
+void sayHi(){
+  int status = digitalRead(SWITCH);
+  Serial.printf("switch-%d", status);
+   Serial.println();
+  if(status == SWITCH_ON) {
+    client.publish(topic_status, switch_open);
+  } else if(status == SWITCH_OFF) {
+    client.publish(topic_status, switch_close);
+  }
+}
+
+void connect_mqtt(){
   while (!client.connected()) {
       String client_id = "esp8266-client-";
       client_id += String(WiFi.macAddress());
       Serial.printf("The client %s connects to the public mqtt broker\n", client_id.c_str());
       if (client.connect(client_id.c_str(), mqtt_username, mqtt_password)) {
           Serial.println("Public emqx mqtt broker connected");
+          // publish and subscribe
+          client.publish(topic, "hello emqx");
+          client.subscribe(topic);
       } else {
           Serial.print("failed with state ");
           Serial.print(client.state());
@@ -105,3 +122,5 @@ void loop() {
   // digitalWrite(OPEN, HIGH);
   // delay(1000);
 }
+
+
