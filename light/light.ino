@@ -80,7 +80,7 @@ void reconnect_mqtt() {
       client.subscribe(topic);
     }
     else {
-      Serial.prin t("failed with state ");
+      Serial.print("failed with state ");
       Serial.print(client.state());
       delay(2000);
     }
