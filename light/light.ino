@@ -116,9 +116,5 @@ void callback(char *topic, byte *payload, unsigned int length) {
 void loop() {
   client.loop();
   reconnect_mqtt();
-  // digitalWrite(LED, LOW);
-  // delay(1000);
-  // digitalWrite(OPEN, HIGH);
-  // delay(1000);
 }
 
