@@ -34,6 +34,17 @@ Ticker ticker;
 WiFiClient espClient;
 PubSubClient client(espClient);
 
+#line 36 "/Users/chen/www/hass/light/light.ino"
+void setup();
+#line 61 "/Users/chen/www/hass/light/light.ino"
+void sayHi();
+#line 72 "/Users/chen/www/hass/light/light.ino"
+void reconnect_mqtt();
+#line 90 "/Users/chen/www/hass/light/light.ino"
+void callback(char *topic, byte *payload, unsigned int length);
+#line 116 "/Users/chen/www/hass/light/light.ino"
+void loop();
+#line 36 "/Users/chen/www/hass/light/light.ino"
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
@@ -54,7 +65,7 @@ void setup() {
   //connecting to a mqtt broker
   client.setServer(mqtt_broker, mqtt_port);
   client.setCallback(callback);
-  connect_mqtt();
+  reconnect_mqtt();
   ticker.attach(10, sayHi);
 }
 
@@ -70,7 +81,7 @@ void sayHi(){
   }
 }
 
-void connect_mqtt(){
+void reconnect_mqtt(){
   while (!client.connected()) {
       String client_id = "esp8266-client-";
       client_id += String(WiFi.macAddress());

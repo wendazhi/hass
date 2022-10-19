@@ -53,7 +53,7 @@ void setup() {
   //connecting to a mqtt broker
   client.setServer(mqtt_broker, mqtt_port);
   client.setCallback(callback);
-  connect_mqtt();
+  reconnect_mqtt();
   ticker.attach(10, sayHi);
 }
 
@@ -69,7 +69,7 @@ void sayHi(){
   }
 }
 
-void connect_mqtt(){
+void reconnect_mqtt(){
   while (!client.connected()) {
       String client_id = "esp8266-client-";
       client_id += String(WiFi.macAddress());
